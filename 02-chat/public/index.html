@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 Chat Socket.IO</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<form id="masuk">
+  <h1>Chat</h1>
+  <input id="nama" placeholder="Nama (2-20 karakter)" autocomplete="off" required>
+  <button>Masuk</button>
+  <p id="errorMasuk" class="error" hidden></p>
+</form>
+
+<main id="chat" hidden>
+  <aside>
+    <h3>Room</h3>
+    <div id="rooms"></div>
+    <h3>Online <small>(klik nama = pesan pribadi)</small></h3>
+    <ul id="online"></ul>
+  </aside>
+  <section>
+    <header><strong id="judulRoom"></strong> <span id="koneksi"></span></header>
+    <ul id="pesan"></ul>
+    <p id="mengetik"></p>
+    <form id="kirim">
+      <small id="tujuanInfo"></small>
+      <input id="teks" placeholder="Ketik pesan..." autocomplete="off">
+      <button>Kirim</button>
+    </form>
+  </section>
+</main>
+
+<script src="/socket.io/socket.io.js"></script>  <!-- disajikan server Socket.IO -->
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin BAAK</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Dashboard Admin BAAK</h1>
+<p>Koneksi: <span id="koneksi">menyambung...</span></p>
+<table>
+  <thead><tr><th>Nomor</th><th>Nama</th><th>NIM</th><th>Status</th><th>Aksi</th></tr></thead>
+  <tbody id="tabel"></tbody>
+</table>
+<h3>Log aktivitas</h3>
+<ul id="log"></ul>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+const AKSI = { diproses: 'Proses', selesai: 'Selesaikan', ditolak: 'Tolak' };
+
+const socket = io();
+socket.on('connect', () => {
+  socket.emit('gabung', { peran: 'admin' }, (res) => console.log('gabung:', res));
+  $('#koneksi').textContent = 'terhubung';
+  $('#koneksi').classList.add('ok');
+  muat();
+});
+socket.on('disconnect', () => {
+  $('#koneksi').textContent = 'terputus, menyambung ulang...';
+  $('#koneksi').classList.remove('ok');
+});
+socket.on('surat:status', (e) => {
+  const li = document.createElement('li');
+  li.textContent = `${new Date(e.waktu).toLocaleTimeString('id-ID')} · ${e.nomor ?? '#' + e.id} (${e.nama}) → ${e.status_label} · sumber: ${e.sumber}`;
+  $('#log').prepend(li);
+  muat();   // ambil ulang data lewat REST
+});
+
+async function muat() {
+  const { data } = await (await fetch('/api/v1/surat')).json();
+  $('#tabel').replaceChildren(...data.map((s) => {
+    const tr = document.createElement('tr');
+    for (const teks of [s.nomor, s.nama, s.nim]) {
+      const td = document.createElement('td'); td.textContent = teks; tr.append(td);
+    }
+    const tdStatus = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.className = 'badge ' + s.status; badge.textContent = s.status_label;
+    tdStatus.append(badge); tr.append(tdStatus);
+    const tdAksi = document.createElement('td');
+    for (const ke of s.berikutnya) {
+      const b = document.createElement('button');
+      b.textContent = AKSI[ke];
+      b.addEventListener('click', () => ubah(s.id, ke));
+      tdAksi.append(b, ' ');
+    }
+    tr.append(tdAksi);
+    return tr;
+  }));
+}
+
+// Perubahan data lewat REST (PATCH); WebSocket hanya untuk memberi tahu.
+async function ubah(id, status) {
+  const res = await fetch(`/api/v1/surat/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ status, catatan: 'Lewat dashboard admin' }),
+  });
+  if (!res.ok) alert((await res.json()).message);
+}
+</script>
+</body>
+</html>

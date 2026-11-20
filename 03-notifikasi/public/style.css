@@ -1,0 +1,8 @@
+body { font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+th, td { border-bottom: 1px solid #ddd; padding: .4rem; text-align: left; }
+.badge { padding: .1rem .5rem; border-radius: 1rem; background: #e5e7eb; font-size: .85rem; }
+.badge.selesai { background: #bbf7d0; } .badge.diproses { background: #fde68a; } .badge.ditolak { background: #fecaca; }
+#koneksi { color: #b45309; } #koneksi.ok { color: #15803d; }
+#log { list-style: none; padding: 0; font-size: .9rem; color: #374151; }
+#toast { position: fixed; right: 1rem; top: 1rem; background: #111827; color: #fff; padding: .75rem 1rem; border-radius: .5rem; display: none; }

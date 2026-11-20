@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Surat Saya</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Surat Saya <small id="nimLabel"></small></h1>
+<p>Koneksi: <span id="koneksi">menyambung...</span></p>
+<p id="kosong" hidden>Tambahkan <code>?nim=2201002</code> di URL.</p>
+<table>
+  <thead><tr><th>Nomor</th><th>Status</th></tr></thead>
+  <tbody id="tabel"></tbody>
+</table>
+<div id="toast"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+const nim = new URLSearchParams(location.search).get('nim');
+let socket;
+
+if (!nim) {
+  $('#kosong').hidden = false;
+} else {
+  $('#nimLabel').textContent = `(NIM ${nim})`;
+  socket = io();
+  socket.on('connect', () => {
+    socket.emit('gabung', { peran: 'mahasiswa', nim }, (res) => console.log('gabung:', res));
+    $('#koneksi').textContent = 'terhubung';
+    $('#koneksi').classList.add('ok');
+    muat(nim);
+  });
+  socket.on('disconnect', () => {
+    $('#koneksi').textContent = 'terputus, menyambung ulang...';
+    $('#koneksi').classList.remove('ok');
+  });
+  // Event ini HANYA diterima pemilik surat (room mhs:<nim>)
+  socket.on('surat:status', (e) => {
+    toast(`Surat ${e.nomor}: ${e.status_label}`, e.catatan);
+    muat(nim);   // ambil ulang data lewat REST
+  });
+}
+
+async function muat(nim) {
+  const { data } = await (await fetch('/api/v1/surat?nim=' + encodeURIComponent(nim))).json();
+  $('#tabel').replaceChildren(...data.map((s) => {
+    const tr = document.createElement('tr');
+    const a = document.createElement('td'); a.textContent = s.nomor;
+    const b = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.className = 'badge ' + s.status; badge.textContent = s.status_label;
+    b.append(badge);
+    tr.append(a, b);
+    return tr;
+  }));
+}
+
+function toast(judul, catatan) {
+  const t = $('#toast');
+  t.textContent = catatan ? `${judul} — ${catatan}` : judul;   // textContent: aman dari XSS
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 4000);
+}
+</script>
+</body>
+</html>

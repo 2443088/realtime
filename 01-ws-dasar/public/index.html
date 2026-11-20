@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 WebSocket Dasar</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+  #log { height: 18rem; overflow-y: auto; background: #111; color: #9f9; padding: .5rem; font: 13px/1.5 monospace; white-space: pre-wrap; }
+  form { display: flex; gap: .5rem; margin-top: .5rem; }
+  input { flex: 1; padding: .4rem; }
+</style>
+</head>
+<body>
+<h1>01 WebSocket dasar</h1>
+<p>Online: <strong id="online">0</strong></p>
+<div id="log"></div>
+<form id="form">
+  <input id="teks" placeholder="Ketik pesan..." autocomplete="off">
+  <button>Kirim</button>
+  <button type="button" id="rusak">Kirim teks bukan JSON</button>
+</form>
+<script>
+const $ = (s) => document.querySelector(s);
+function tulis(t) {
+  const d = document.createElement('div');
+  d.textContent = t;                       // textContent: mencegah XSS
+  $('#log').append(d);
+  d.scrollIntoView({ block: 'end' });
+}
+
+// 1. Membuka koneksi. ws:// untuk http, wss:// untuk https
+const protokol = location.protocol === 'https:' ? 'wss' : 'ws';
+const socket = new WebSocket(`${protokol}://${location.host}`);
+
+// 2. Empat event WebSocket
+socket.addEventListener('open', () => tulis('koneksi terbuka (HTTP 101 Switching Protocols)'));
+socket.addEventListener('message', (event) => {
+  const pesan = JSON.parse(event.data);
+  if (pesan.type === 'online') $('#online').textContent = pesan.online;
+  tulis('<- ' + event.data);
+});
+socket.addEventListener('close', (event) => tulis(`koneksi tertutup (kode ${event.code})`));
+socket.addEventListener('error', () => tulis('terjadi error pada koneksi'));
+
+// 3. Mengirim: harus string, jadi objek diubah ke JSON
+$('#form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = $('#teks').value.trim();
+  if (!text) return;
+  socket.send(JSON.stringify({ type: 'chat', text }));
+  tulis('-> ' + text);
+  $('#teks').value = '';
+});
+$('#rusak').addEventListener('click', () => socket.send('ini bukan json'));
+</script>
+</body>
+</html>

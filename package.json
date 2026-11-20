@@ -1,0 +1,21 @@
+{
+  "name": "realtime",
+  "version": "1.0.0",
+  "description": "Praktikum WebSocket: ws, Socket.IO chat, notifikasi status surat",
+  "scripts": {
+    "test": "node uji/uji.mjs",
+    "ws-dasar": "node --watch 01-ws-dasar/server.js",
+    "chat": "node --watch 02-chat/server.js",
+    "notifikasi": "node --watch 03-notifikasi/server.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "express": "^4.22.3",
+    "socket.io": "^4.8.4",
+    "ws": "^8.23.0"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
+  },
+  "private": true
+}

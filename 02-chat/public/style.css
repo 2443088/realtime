@@ -1,0 +1,25 @@
+* { box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; margin: 0; background: #f4f4f5; }
+#masuk { max-width: 320px; margin: 4rem auto; display: grid; gap: .5rem; }
+.error { color: #b91c1c; margin: 0; }
+main { display: grid; grid-template-columns: 220px 1fr; height: 100vh; }
+aside { background: #fff; border-right: 1px solid #ddd; padding: 1rem; overflow-y: auto; }
+aside button { display: block; width: 100%; margin-bottom: .25rem; text-align: left; }
+aside button.aktif { background: #2563eb; color: #fff; }
+#online { list-style: none; padding: 0; margin: 0; }
+#online li { cursor: pointer; padding: .15rem 0; }
+#online li.tujuan { font-weight: 700; color: #7c3aed; }
+section { display: flex; flex-direction: column; height: 100vh; }
+header { padding: .75rem 1rem; background: #fff; border-bottom: 1px solid #ddd; }
+#koneksi { margin-left: .5rem; color: #b45309; font-size: .85rem; }
+#koneksi.ok { color: #15803d; }
+#pesan { flex: 1; overflow-y: auto; list-style: none; margin: 0; padding: 1rem; }
+#pesan li { margin-bottom: .5rem; max-width: 70%; background: #fff; padding: .4rem .6rem; border-radius: .5rem; }
+#pesan li p { margin: 0; overflow-wrap: anywhere; }
+#pesan li.saya { margin-left: auto; background: #dbeafe; }
+#pesan li.sistem { background: none; color: #6b7280; font-size: .85rem; max-width: 100%; }
+#pesan li.error { color: #b91c1c; }
+#pesan li.pribadi { background: #ede9fe; }
+#mengetik { margin: 0 1rem; min-height: 1.2rem; color: #6b7280; font-size: .85rem; }
+#kirim { display: flex; gap: .5rem; padding: .75rem 1rem; background: #fff; border-top: 1px solid #ddd; align-items: center; }
+#kirim input { flex: 1; padding: .4rem; }
